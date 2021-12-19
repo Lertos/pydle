@@ -1,0 +1,5 @@
+/build/
+/dist/
+/setup_instructions.txt
+/main.spec
+__pycache__
