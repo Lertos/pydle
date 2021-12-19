@@ -5,13 +5,16 @@ from pygame.locals import *
 
 def main():
 
+    WIDTH = 1280
+    HEIGHT = 720
+
     tester = src.test
 
     text = tester.test()
     # Initialise screen
     pygame.init()
     flags = pygame.SCALED | pygame.RESIZABLE
-    screen = pygame.display.set_mode((1280, 720), flags, vsync=1)
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), flags, vsync=1)
     pygame.display.set_caption("Noxphor")
 
     # Fill background
