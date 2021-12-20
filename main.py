@@ -1,7 +1,7 @@
 import pygame
 import pygame.pkgdata
 
-import src.key_handler
+import src.key_handler as keys
 
 from pygame.locals import *
 from time import sleep
@@ -25,16 +25,17 @@ pygame.display.set_caption("Noxphor")
 TEXT_DATA = pygame.pkgdata.getResource("freesansbold.ttf")
 TEXT_FONT = pygame.font.Font(TEXT_DATA, 24)
 
-
+keyHandler = keys.KeyHandler(pygame)
 
 
 def draw():
     WINDOW.fill(BLACK)
-    text = TEXT_FONT.render("Test Text", 1, WHITE)
-    textpos = text.get_rect()
-    textpos.centerx = WINDOW.get_rect().centerx
-    textpos.centery = WINDOW.get_rect().centery
-    WINDOW.blit(text, textpos)
+    
+    text = TEXT_FONT.render(keyHandler.getAllKeys(), 1, WHITE)
+    textPosition = text.get_rect()
+    textPosition.centerx = WINDOW.get_rect().centerx
+    textPosition.centery = WINDOW.get_rect().centery
+    WINDOW.blit(text, textPosition)
 
     pygame.display.update()
 
@@ -50,13 +51,26 @@ def main():
         for event in pygame.event.get():
             if event.type == QUIT:
                 return
-
-        #Get the key presses
-        keys_pressed = pygame.key.get_pressed()
-
+            
+            if event.type == pygame.KEYDOWN:
+                key = event.key
+                
+                if key == pygame.K_BACKSPACE:
+                    keyHandler.removeCharacter()
+                elif key == pygame.K_RETURN:
+                    keyHandler.clearKeysNextFrame = True
+                elif key == pygame.K_f:
+                    keyHandler.startMultiKeyMode()
+                elif key == pygame.K_s:
+                    keyHandler.startSingleKeyMode()
+                else:
+                    keyHandler.addPressedKey(key)
 
         draw()
         
+        if keyHandler.clearKeysNextFrame:
+            keyHandler.clearKeys()
+            keyHandler.clearKeysNextFrame = False
 
 
 if __name__ == "__main__": main()
