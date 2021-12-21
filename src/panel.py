@@ -22,6 +22,8 @@ class Panel:
         self.debug = debug
         self.drawBorder = True
         
+        self.textToDraw = ''
+        
         self.width, self.height = width, height
         
         self.borderColor = borderColor
@@ -39,13 +41,8 @@ class Panel:
         if self.drawBorder:
             self.drawSquare(self.borderColor, 1, self.posX, self.posY, self.width, self.height)
         
-        #Temporary until we can pass things to this method
-        text = [
-            'red::Check out my bike::yellow::ok dude',
-            '',
-            'white::Normal text after new line'
-        ]
-        self.drawText(text, self.rect)
+        self.drawText(self.rect)
+
 
     def drawDebug(self):
         self.drawSquare(self.COLOR_NO_PADDING, 0, self.posX, self.posY, self.width, self.height)
@@ -57,14 +54,23 @@ class Panel:
         self.pygame.draw.rect(self.window, color, rect, borderWidth, border_radius=1)
 
 
-    def drawText(self, text, rect, align=TEXT_ALIGN_LEFT):
-        lineLengths, lineImages = self.getImagesAndLengthFromText(text, rect[2])
+    def setTextToDraw(self, text):
+        self.textToDraw = text
+
+
+    def drawText(self, rect, align=TEXT_ALIGN_LEFT):
+        lineLengths, lineImages = self.getImagesAndLengthFromText(self.textToDraw, rect[2])
         
         lineBottom = rect[1]
         lastLine = 0
 
         for length, images in zip(lineLengths, lineImages):
-            if length != -1:
+            #If a new line is desired, skip a line
+            if length == -2:
+                lastLine += 1
+                lineBottom += self.fontHeight - 2
+            #If there are images, then draw them 
+            elif length != -1:
                 lineLeft = rect[0]
                 if align == self.TEXT_ALIGN_RIGHT:
                     lineLeft += + rect[2] - length - self.spaceWidth * (len(images)-1)
@@ -77,10 +83,10 @@ class Panel:
                 for i, image in enumerate(images):
                     x, y = lineLeft + i * self.spaceWidth, lineBottom
                     self.window.blit(image, (round(x), y))
-                    lineLeft += image.get_width() 
+                    lineLeft += image.get_width()
             
-            lastLine += 1
-            lineBottom += self.fontHeight - 2
+                lastLine += 1
+                lineBottom += self.fontHeight + 2
 
 
     def getImagesAndLengthFromText(self, textList, maxLineLen):
@@ -96,6 +102,12 @@ class Panel:
                 if sections[i] == '':
                     lineLengths.append(-1)
                     lineImages.append([-1])
+                    continue
+                
+                #If section is a empty line
+                if sections[i] == '\n':
+                    lineLengths.append(-2)
+                    lineImages.append([-2])
                     continue
                 
                 #If section is the color

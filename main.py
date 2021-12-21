@@ -24,11 +24,38 @@ WINDOW = pygame.display.set_mode((WIDTH, HEIGHT), FLAGS, vsync=1)
 pygame.display.set_caption('Noxphor')
 
 TEXT_DATA = pygame.pkgdata.getResource('freesansbold.ttf')
-TEXT_FONT = pygame.font.Font(TEXT_DATA, 24)
+TEXT_FONT = pygame.font.Font(TEXT_DATA, 20)
 
 keyHandler = keys.KeyHandler(pygame)
-mainPanel = panel.Panel(pygame, WINDOW, TEXT_FONT, False, 700, 150, (50, 80, 120), 20, 20, 10, 10)
-secondPanel = panel.Panel(pygame, WINDOW, TEXT_FONT, True, 300, 150, (150, 80, 50), 0, 0, 10, 10)
+
+characterPanel = panel.Panel(pygame, WINDOW, TEXT_FONT, False, 360, 700, (50, 80, 120), 10, 10, 10, 10)
+#Temporary until we can pass things to this method
+text = [
+    'white::Name Lertos::',
+    'yellow::Gold::white::100$::',
+    'red::Health::white::200::'
+]
+characterPanel.setTextToDraw(text)
+
+mainPanel = panel.Panel(pygame, WINDOW, TEXT_FONT, False, 890, 500, (150, 80, 50), 380, 10, 10, 10)
+#Temporary until we can pass things to this method
+text = [
+    'yellow::1::white::TravelTravelTravel::',
+    '\n::',
+    'yellow::2::white::Make Campfire::',
+    'yellow::3::white::Eat::'
+]
+mainPanel.setTextToDraw(text)
+
+
+chatPanel = panel.Panel(pygame, WINDOW, TEXT_FONT, False, 890, 190, (30, 150, 50), 380, 520, 10, 10)
+#Temporary until we can pass things to this method
+text = [
+    'white::Chat Panel',
+    '',
+    'white::You did 0 damage to the Rat'
+]
+chatPanel.setTextToDraw(text)
 
 
 def draw(panels):
@@ -51,7 +78,9 @@ def main():
     fpsClock = pygame.time.Clock()
     
     panels = []
+    panels.append(characterPanel)
     panels.append(mainPanel)
+    panels.append(chatPanel)
     
     #Game loop
     while 1:
