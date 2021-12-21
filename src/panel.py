@@ -39,11 +39,13 @@ class Panel:
         if self.drawBorder:
             self.drawSquare(self.borderColor, 1, self.posX, self.posY, self.width, self.height)
         
-        self.drawText([('red','This is a line that will stretch to two lines'), ('',''), ('white','This is a line'), ('green','with color')], self.rect)
-        #TODO - Instead of having tuples like above, split on "::" and get colors that way
-        #Then in the setup simply have lists of strings almost like a dialog and then
-        #join them in a list then split them here in the drawText method
-        print('red::Check out my bike::yellow::ok dude'.split('::'))
+        #Temporary until we can pass things to this method
+        text = [
+            'red::Check out my bike::yellow::ok dude',
+            '',
+            'white::Normal text after new line'
+        ]
+        self.drawText(text, self.rect)
 
     def drawDebug(self):
         self.drawSquare(self.COLOR_NO_PADDING, 0, self.posX, self.posY, self.width, self.height)
@@ -86,30 +88,39 @@ class Panel:
         lineImages = [[]]
 
         for line in textList:
-            if line[1] == '':
-                lineLengths.append(-1)
-                lineImages.append([-1])
-                continue
+            sections = line.split('::')
+            color = (self.WHITE)
 
-            color = self.getColorFromCode(line[0])
-            
-            wordList = line[1].split(' ')
-            imageList = [self.font.render(word, True, color) for word in wordList]
-            
-            for image in imageList:
-                width = image.get_width()
-                lineLen = lineLengths[-1] + len(lineImages[-1]) * self.spaceWidth + width
+            for i in range(0, len(sections)):
+                #If section is simply a line break
+                if sections[i] == '':
+                    lineLengths.append(-1)
+                    lineImages.append([-1])
+                    continue
                 
-                if lineLengths[-1] == -1:
-                    lineLengths.append(0)
-                    lineImages.append([])
+                #If section is the color
+                if i%2 == 0:
+                    color = self.getColorFromCode(sections[i])
+                    continue
                 
-                if len(lineImages[-1]) == 0 or lineLen <= maxLineLen:
-                    lineLengths[-1] += width
-                    lineImages[-1].append(image)
-                else:
-                    lineLengths.append(width)
-                    lineImages.append([image])
+                #If section is the actual text
+                wordList = sections[i].split(' ')
+                imageList = [self.font.render(word, True, color) for word in wordList]
+                
+                for image in imageList:
+                    width = image.get_width()
+                    lineLen = lineLengths[-1] + len(lineImages[-1]) * self.spaceWidth + width
+                    
+                    if lineLengths[-1] == -1:
+                        lineLengths.append(0)
+                        lineImages.append([])
+                    
+                    if len(lineImages[-1]) == 0 or lineLen <= maxLineLen:
+                        lineLengths[-1] += width
+                        lineImages[-1].append(image)
+                    else:
+                        lineLengths.append(width)
+                        lineImages.append([image])
 
         return lineLengths, lineImages
 
@@ -119,9 +130,9 @@ class Panel:
             return (245, 66, 66)
         elif code == 'green':
             return (66, 245, 72)
-        elif code == 'white':
-            return (250, 250, 250)
+        elif code == 'yellow':
+            return (245, 239, 66)
         else:
-            return (0, 0, 0)
+            return (250, 250, 250)
             
         
