@@ -1,17 +1,18 @@
 import pygame
 import pygame.pkgdata
 
-import src.key_handler as keys
+import src.game_data as game_data
+import src.key_handler as key_handler
+import src.state_handler as state_handler
 import src.panel as panel
 
 from pygame.locals import *
-from time import sleep
 
 
 WIDTH = 1280
 HEIGHT = 720
 
-FPS = 10
+FPS = 20
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -26,7 +27,8 @@ pygame.display.set_caption('Noxphor')
 TEXT_DATA = pygame.pkgdata.getResource('freesansbold.ttf')
 TEXT_FONT = pygame.font.Font(TEXT_DATA, 20)
 
-keyHandler = keys.KeyHandler(pygame)
+gameData = game_data.GameData()
+keyHandler = key_handler.KeyHandler(pygame)
 
 characterPanel = panel.Panel(pygame, WINDOW, TEXT_FONT, False, 360, 700, (50, 80, 120), 10, 10, 10, 10)
 #Temporary until we can pass things to this method
@@ -56,6 +58,8 @@ text = [
     'white::You did 0 damage to the Rat'
 ]
 chatPanel.setTextToDraw(text)
+
+stateHandler = state_handler.StateHandler(gameData, characterPanel, mainPanel, chatPanel)
 
 
 def draw(panels):
@@ -103,6 +107,7 @@ def main():
                     keyHandler.startSingleKeyMode()
                 else:
                     keyHandler.addPressedKey(key)
+                    stateHandler.handleKeyCommand(keyHandler.getAllKeys())
 
         draw(panels)
         
